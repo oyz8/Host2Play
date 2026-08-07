@@ -36,22 +36,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install DrissionPage xvfbwrapper requests SpeechRecognition pydub
 
-      - name: 启用 WARP 网络
-        uses: fscarmen/warp-on-actions@v1.3
-        with:
-          stack: dual
-          mode: client
+      # - name: 启用 WARP 网络
+      #  uses: fscarmen/warp-on-actions@v1.3
+      #  with:
+      #    stack: dual
+      #    mode: client
 
-      - name: 修复 DNS
+      # - name: 修复 DNS
+      #  run: |
+      #    sudo systemctl stop systemd-resolved 2>/dev/null || true
+      #    sudo systemctl disable systemd-resolved 2>/dev/null || true
+      #    sudo rm -f /etc/resolv.conf
+      #    echo -e "nameserver 1.1.1.1\nnameserver 8.8.8.8\nnameserver 1.0.0.1" | sudo tee /etc/resolv.conf
+      #    sleep 2
+      #    nslookup host2play.gratis 1.1.1.1 || echo "[WARN] 解析失败"
+      #    curl -s --max-time 10 https://api.ipify.org && echo
+      #    curl -s --max-time 10 https://www.cloudflare.com/cdn-cgi/trace | grep -E 'ip=|warp=|loc=' || true
+
+
+      - name: ⚙ 设置代理 (sing-box)
+        continue-on-error: true
+        env:
+          NODE_LINK: ${{ secrets.NODE_LINK }}
         run: |
-          sudo systemctl stop systemd-resolved 2>/dev/null || true
-          sudo systemctl disable systemd-resolved 2>/dev/null || true
-          sudo rm -f /etc/resolv.conf
-          echo -e "nameserver 1.1.1.1\nnameserver 8.8.8.8\nnameserver 1.0.0.1" | sudo tee /etc/resolv.conf
-          sleep 2
-          nslookup host2play.gratis 1.1.1.1 || echo "[WARN] 解析失败"
-          curl -s --max-time 10 https://api.ipify.org && echo
-          curl -s --max-time 10 https://www.cloudflare.com/cdn-cgi/trace | grep -E 'ip=|warp=|loc=' || true
+          bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
+
 
       - name: 执行续订
         env:
